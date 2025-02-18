@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 // import { useEffect } from "react";
 import SearchBar from "./component/SearchBar/SearchBar";
@@ -30,7 +30,10 @@ function App() {
         `${URL}search/photos?query=${query}&client_id=${KEY}`
       );
       const data = await response.json();
-      setImages(data.results);
+
+
+
+      setImages(prevImages => [...prevImages, ...data.results]);
       localStorage.setItem("images", JSON.stringify(data.results));
     } catch (error) {
       console.log("error", error);
@@ -39,11 +42,12 @@ function App() {
     }
   };
 
-  // useEffect(() => {
-  //   setIsLoading(true);
 
-  //   fetchImg();
-  // }, [query]);
+  useEffect(() => {
+    setIsLoading(true);
+
+    fetchImg();
+  }, [query]);
 
   return (
     <>

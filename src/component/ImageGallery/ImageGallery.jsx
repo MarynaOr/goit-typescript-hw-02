@@ -1,10 +1,14 @@
 import ImageCard from "./ImageCard";
 
 const ImageGallery = ({ images }) => {
+  const uniqueImages = images.filter(
+    (image, index, self) => index === self.findIndex((img) => img.id === image.id)
+  );
+
   return (
     <>
       <ul>
-        {images.map((image) => (
+        {uniqueImages.map((image) => (
           <li key={image.id}>
             <ImageCard image={image} />
           </li>
