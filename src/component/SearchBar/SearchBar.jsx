@@ -8,7 +8,7 @@ const SearchBar = ({ setQuery }) => {
     if (!searchQuery) {
       return toast.error("The search field is empty 😖");
     }
-    
+
     setQuery(searchQuery);
     e.target.reset();
   };

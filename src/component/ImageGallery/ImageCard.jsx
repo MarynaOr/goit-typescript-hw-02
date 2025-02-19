@@ -1,10 +1,8 @@
-const ImageCard = ({ image }) => {
+const ImageCard = ({ image, openModal }) => {
   return (
-    <>
-      <div>
-        <img src={image.urls.small} alt={image.alt_description || "image"} />
-      </div>
-    </>
+    <div className="image-card" onClick={() => openModal(image.urls.full)}>
+      <img src={image.urls.small} alt={image.alt_description} />
+    </div>
   );
 };
 
