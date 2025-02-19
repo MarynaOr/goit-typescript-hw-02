@@ -1,41 +1,31 @@
 import toast from "react-hot-toast";
 
-const SearchBar = () => {
+const SearchBar = ({ setQuery }) => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const searchQuery = e.target.query.value.trim().toLowerCase();
 
-
-
-    const handleSubmit =(e)=>{
-        e.preventDefault()
-        const searchQuery = e.target.query.value
-
-        if(!searchQuery){
-            return toast.error("the search field is empty😖")
-        }else {
-            console.log("Searching for:", searchQuery);
-          }
-
-    e.target.reset()
-        
+    if (!searchQuery) {
+      return toast.error("The search field is empty 😖");
     }
-
-
-
-
+    
+    setQuery(searchQuery);
+    e.target.reset();
+  };
 
   return (
-    <>
-      <header>
-        <form onSubmit={handleSubmit}>
-          <input type="text" 
-          autoComplete='off'
+    <header>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          autoComplete="off"
           autoFocus
           placeholder="Search images and photos"
           name="query"
-          />
-          <button type="submit" >Search</button>
-        </form>
-      </header>
-    </>
+        />
+        <button type="submit">Search</button>
+      </form>
+    </header>
   );
 };
 
