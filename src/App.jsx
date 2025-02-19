@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import SearchBar from "./component/SearchBar/SearchBar";
+import SearchBar from "./components/SearchBar/SearchBar";
 import { Toaster } from "react-hot-toast";
-import ImageGallery from "./component/ImageGallery/ImageGallery";
-import Loader from "./component/Loader/Loader";
-import LoadMoreBtn from "./component/LoadMoreBtn/LoadMoreBtn";
-import ImageModal from "./component/ImageModal/ImageModal";
+import ImageGallery from "./components/ImageGallery/ImageGallery";
+import Loader from "./components/Loader/Loader";
+import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
+import ImageModal from "./components/ImageModal/ImageModal";
 
 function App() {
   const KEY = "EDQlrnIEQ_NrkKvjtjVS0rM0jqjFEHM6C-Vg9Y-RbyU";
