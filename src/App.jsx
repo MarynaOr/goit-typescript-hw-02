@@ -6,15 +6,18 @@ import ImageGallery from "./components/ImageGallery/ImageGallery";
 import Loader from "./components/Loader/Loader";
 import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
 import ImageModal from "./components/ImageModal/ImageModal";
+import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 
 function App() {
   const KEY = "EDQlrnIEQ_NrkKvjtjVS0rM0jqjFEHM6C-Vg9Y-RbyU";
   const URL = "https://api.unsplash.com/";
-  const [query, setQuery] = useState("Kharkiv");
+  const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
+  const [isError,setIsError] = useState(false)
+
 
   const [images, setImages] = useState(() => {
     const savedImage = localStorage.getItem("images");
@@ -22,33 +25,50 @@ function App() {
   });
 
   useEffect(() => {
+    if (!query) return; 
+
     setImages([]);
     setPage(1);
   }, [query]);
 
   useEffect(() => {
+    if (!query) return;
+
     const fetchImg = async () => {
       try {
         setIsLoading(true);
+        setIsError(false)
         const response = await fetch(
           `${URL}search/photos?query=${query}&page=${page}&client_id=${KEY}`
         );
         const data = await response.json();
-
-        setImages((prevImages) => [...prevImages, ...data.results]);
-        localStorage.setItem(
-          "images",
-          JSON.stringify([...images, ...data.results])
-        );
+  
+       
+        setImages((prevImages) => {
+          const newImages = data.results.filter(
+            (newImg) => !prevImages.some((img) => img.id === newImg.id)
+          );
+  
+          const updatedImages = [...prevImages, ...newImages];
+          
+          localStorage.setItem("images", JSON.stringify(updatedImages));
+  
+          return updatedImages;
+        });
+  
       } catch (error) {
         console.error("Error fetching images:", error);
+        setIsError(true)
       } finally {
         setIsLoading(false);
       }
     };
-
+  
     fetchImg();
   }, [query, page]);
+
+
+ 
 
   const loadMore = () => setPage((prevPage) => prevPage + 1);
 
@@ -64,10 +84,13 @@ function App() {
       <SearchBar setQuery={setQuery} />
       <Toaster />
       {isLoading && page === 1 ? (
-        <Loader />
-      ) : (
-        <ImageGallery images={images} openModal={openModal} />
-      )}
+  <Loader />
+) : isError ? (
+  <ErrorMessage/>
+) : (
+  <ImageGallery images={images} openModal={openModal} />
+)}
+      
       {images.length > 0 && (
         <LoadMoreBtn isLoading={isLoading} loadMoreImages={loadMore} />
       )}
