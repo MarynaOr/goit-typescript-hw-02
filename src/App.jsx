@@ -20,7 +20,7 @@ function App() {
 
 
   const [images, setImages] = useState(() => {
-    const savedImage = localStorage.getItem("images");
+    const savedImage = localStorage.getItem([]);
     return savedImage ? JSON.parse(savedImage) : [];
   });
 
