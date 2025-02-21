@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import SearchBar from "./components/SearchBar/SearchBar";
 import { Toaster } from "react-hot-toast";
@@ -16,61 +16,48 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
-  const [isError,setIsError] = useState(false)
+  const [isError, setIsError] = useState(false);
+  const [images, setImages] = useState([]);
 
+  const fetchImg = async (newQuery, newPage) => {
+    if (!newQuery) return;
 
-  const [images, setImages] = useState(() => {
-    const savedImage = localStorage.getItem([]);
-    return savedImage ? JSON.parse(savedImage) : [];
-  });
+    try {
+      setIsLoading(true);
+      setIsError(false);
+      const response = await fetch(
+        `${URL}search/photos?query=${newQuery}&page=${newPage}&client_id=${KEY}`
+      );
+      const data = await response.json();
 
-  useEffect(() => {
-    if (!query) return; 
+      setImages((prevImages) => {
+        const newImages = data.results.filter(
+          (newImg) => !prevImages.some((img) => img.id === newImg.id)
+        );
 
+        return newPage === 1 ? newImages : [...prevImages, ...newImages];
+      });
+    } catch (error) {
+      console.error("Error fetching images:", error);
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSearchSubmit = (newQuery) => {
+    if (newQuery === query) return;
+    setQuery(newQuery);
     setImages([]);
     setPage(1);
-  }, [query]);
+    fetchImg(newQuery, 1);
+  };
 
-  useEffect(() => {
-    if (!query) return;
-
-    const fetchImg = async () => {
-      try {
-        setIsLoading(true);
-        setIsError(false)
-        const response = await fetch(
-          `${URL}search/photos?query=${query}&page=${page}&client_id=${KEY}`
-        );
-        const data = await response.json();
-  
-       
-        setImages((prevImages) => {
-          const newImages = data.results.filter(
-            (newImg) => !prevImages.some((img) => img.id === newImg.id)
-          );
-  
-          const updatedImages = [...prevImages, ...newImages];
-          
-          localStorage.setItem("images", JSON.stringify(updatedImages));
-  
-          return updatedImages;
-        });
-  
-      } catch (error) {
-        console.error("Error fetching images:", error);
-        setIsError(true)
-      } finally {
-        setIsLoading(false);
-      }
-    };
-  
-    fetchImg();
-  }, [query, page]);
-
-
- 
-
-  const loadMore = () => setPage((prevPage) => prevPage + 1);
+  const loadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchImg(query, nextPage);
+  };
 
   const openModal = (imageUrl) => {
     setSelectedImage(imageUrl);
@@ -81,24 +68,18 @@ function App() {
 
   return (
     <>
-      <SearchBar setQuery={setQuery} />
+      <SearchBar onSubmit={handleSearchSubmit} />
       <Toaster />
       {isLoading && page === 1 ? (
-  <Loader />
-) : isError ? (
-  <ErrorMessage/>
-) : (
-  <ImageGallery images={images} openModal={openModal} />
-)}
-      
-      {images.length > 0 && (
-        <LoadMoreBtn isLoading={isLoading} loadMoreImages={loadMore} />
+        <Loader />
+      ) : isError ? (
+        <ErrorMessage />
+      ) : (
+        <ImageGallery images={images} openModal={openModal} />
       )}
-      <ImageModal
-        isOpen={modalIsOpen}
-        imageUrl={selectedImage}
-        onRequestClose={closeModal}
-      />
+
+      {images.length > 0 && <LoadMoreBtn isLoading={isLoading} loadMoreImages={loadMore} />}
+      <ImageModal isOpen={modalIsOpen} imageUrl={selectedImage} onRequestClose={closeModal} />
     </>
   );
 }

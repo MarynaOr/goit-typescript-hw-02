@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 
-const SearchBar = ({ setQuery }) => {
+const SearchBar = ({ onSubmit }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const searchQuery = e.target.query.value.trim().toLowerCase();
@@ -9,7 +9,7 @@ const SearchBar = ({ setQuery }) => {
       return toast.error("The search field is empty 😖");
     }
 
-    setQuery(searchQuery);
+    onSubmit(searchQuery); 
     e.target.reset();
   };
 
