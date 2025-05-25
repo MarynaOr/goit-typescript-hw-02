@@ -1,6 +1,10 @@
 import ImageCard from "../ImageCard/ImageCard";
-
-const ImageGallery = ({ images, openModal }) => {
+import { Image } from "../App/App";
+interface ImgOpnMdal{
+  images: Image[],
+  openModal: (imageUrl:string)=> void
+}
+const ImageGallery:React.FC<ImgOpnMdal> = ({ images, openModal }) => {
   // const uniqueImages = images.filter(
   //   (image, index, self) =>
   //     index === self.findIndex((img) => img.id === image.id)
